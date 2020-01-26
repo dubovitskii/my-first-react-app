@@ -1,71 +1,23 @@
-import React, {useEffect} from 'react';
-import TodoList from "./todo/TodoList"
-import Context from './contest'
-import Loader from './Loader'
-import Modal from './Modal/Modal';
-
-const AddTodo = React.lazy(() => import('./todo/AddTodo'))
+import React from 'react';
+import TodoApp from './components/todo/TodoApp'
+import Navbar from './components/navbar/Navbar';
+import { BrowserRouter, Route } from 'react-router-dom';
+import Dialogs from './components/Dialogs';
 
 function App() {
-  const [todos, setTodos] = React.useState([])
-  const [loading, setLoading] = React.useState(true)
-
-  useEffect(() => {
-    fetch('https://jsonplaceholder.typicode.com/todos?_limit=5')
-      .then(response => response.json())
-      .then(todos => {
-          setTodos(todos)
-          setLoading(false)
-      })
-  }, [])
-
-  function toggleTodo(id) {
-    setTodos(
-      todos.map(todo =>{
-        if (todo.id === id) {
-          todo.completed = !todo.completed
-        }
-        return todo
-      })
-    )
-  }
-
-  function removeTodo(id) {
-    setTodos(todos.filter(todo => todo.id !== id))
-  }
-
-  function addTodo(title) {
-    setTodos(todos.concat([{
-      title,
-      id: Date.now,
-      completed: false
-
-    }]))
-  }
-
   return (
-    <Context.Provider value={{ removeTodo }}>
+    <BrowserRouter>
       <div className="wrapper">
-        <h1>React tutorial</h1>
-
-        <Modal />
-
-        <React.Suspense fallback={<p>loading....</p>}>
-          <AddTodo onCreate={addTodo}/>
-        </React.Suspense>       
-
-        {loading && <Loader />}
-        {todos.length ? (        
-          <TodoList 
-          todos={todos} 
-          onToggle={toggleTodo}
-        /> 
-        ) : (
-          loading ? null :
-          <p>No todos</p>
-        )}
+        <div className="header">Header</div>
+        <div className="nav">
+          <Navbar />
+        </div>
+        <div className="content">
+          <Route path='/todos' component={TodoApp}/>
+          <Route path='/message' component={Dialogs}/>
+        </div>
       </div>
-    </Context.Provider>
+    </BrowserRouter>
   )
 }
 
